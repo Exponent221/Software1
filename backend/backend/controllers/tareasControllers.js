@@ -53,8 +53,8 @@ const deleteTarea = asyncHandler(async (req, res) => {
         res.status(401);
         throw new Error('Usuario no autorizado');
     }else{
-        await Tarea.deleteOne(tarea);
-        res.status(200).json(tareaUpdated);
+        await tarea.deleteOne();
+        res.status(200).json({ id: req.params.id });
 
     }
 });
