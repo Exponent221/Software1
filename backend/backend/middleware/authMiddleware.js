@@ -1,0 +1,31 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+
+const protect = async (req, res, next) => {
+
+  let token;
+
+  if (req.header.authorization && req.header.authorization.startsWith('Bearer')) {
+    try {
+        //obtenemos el token
+        token = req.header.authorization.split(' ')[1];
+
+        //verificamos el token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        //obtenemos toda la info del usuario del token
+        req.user = await User.findById(decoded.id_usuario).select('-password');
+
+        next();
+    }catch (error) {
+        console.error(error);
+        res.status(401);
+        throw new Error('Acceso no autorizado, no se proporcionó un token válido');
+        }
+    }
+
+    if (!token) {
+        res.status(401);
+        throw new Error('Acceso no autorizado, no se proporcionó un token');
+    }
+}
